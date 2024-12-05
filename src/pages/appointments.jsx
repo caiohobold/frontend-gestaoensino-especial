@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../components/navbar';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addDays } from 'date-fns';
 import { createAgendamento, deleteAgendamento, getAllAgendamentos, updateAgendamento } from '@/api/services/appointments';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -73,11 +73,11 @@ export default function AgendamentosSaude() {
     };
 
     const handleEdit = (agendamento) => {
-        setIsAdding(false); 
+        setIsAdding(false);
         setPayloadData({
             specialty: agendamento.specialty,
             comments: agendamento.comments,
-            date: format(parseISO(agendamento.date), 'yyyy-MM-dd'), 
+            date: agendamento.date ? format(addDays(new Date(agendamento.date), 1), 'yyyy-MM-dd') : '',
             student: agendamento.student,
             professional: agendamento.professional,
         });
@@ -145,7 +145,7 @@ export default function AgendamentosSaude() {
                                     <TableCell>{agendamento.comments}</TableCell>
                                     <TableCell>{agendamento.student}</TableCell>
                                     <TableCell>{agendamento.professional}</TableCell>
-                                    <TableCell>{format(new Date(agendamento.date), 'dd/MM/yyyy')}</TableCell>
+                                    <TableCell>{format(addDays(new Date(agendamento.date), 1), 'dd/MM/yyyy')}</TableCell>
                                     <TableCell>
                                         <IconButton onClick={() => handleEdit(agendamento)} color="primary">
                                             <EditIcon />
@@ -193,9 +193,13 @@ export default function AgendamentosSaude() {
                         style={{ marginBottom: 10 }}
                     />
                     <TextField
-                        type='date'
+                        type="date"
                         fullWidth
-                        value={payloadData.date}
+                        value={
+                            payloadData.date
+                                ? format(addDays(new Date(payloadData.date), 1), 'yyyy-MM-dd')
+                                : ''
+                        }
                         onChange={(e) => setPayloadData({ ...payloadData, date: e.target.value })}
                         style={{ marginBottom: 10 }}
                     />
